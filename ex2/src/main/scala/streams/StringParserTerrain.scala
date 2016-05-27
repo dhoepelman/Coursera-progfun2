@@ -19,9 +19,9 @@ import common._
  * - The `-` character denotes parts which are outside the terrain
  * - `o` denotes fields which are part of the terrain
  * - `S` denotes the start position of the block (which is also considered
-     inside the terrain)
+  * inside the terrain)
  * - `T` denotes the final position of the block (which is also considered
-     inside the terrain)
+  * inside the terrain)
  *
  * In this example, the first and last lines could be omitted, and
  * also the columns that consist of `-` characters only.
@@ -52,7 +52,24 @@ trait StringParserTerrain extends GameDef {
    * a valid position (not a '-' character) inside the terrain described
    * by `levelVector`.
    */
-  def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean = ???
+  private def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean = pos => atPos(levelVector)(pos) match {
+    case Some(c) if c != '-' => true
+    case _ => false
+  }
+
+  def terrainFunction2(levelVector: Vector[Vector[Char]]): Pos => Boolean = pos => {
+    toPosMap(levelVector).get(pos) match {
+      case Some(c) if c != '-' => true
+      case _ => false
+    }
+  }
+
+  private def toPosMap(levelVector: Vector[Vector[Char]]) =
+    levelVector.zipWithIndex.foldLeft[Map[Pos,Char]](Map.empty)({case (acc, (ys,x)) =>
+      acc ++ ys.zipWithIndex.map({case (terrain, y) => Pos(x,y) -> terrain})
+    })
+
+  private def atPos(levelVector: Vector[Vector[Char]]) : Pos => Option[Char] = pos => levelVector.lift(pos.x).flatMap(_.lift(pos.y))
 
   /**
    * This function should return the position of character `c` in the
@@ -62,7 +79,17 @@ trait StringParserTerrain extends GameDef {
    * Hint: you can use the functions `indexWhere` and / or `indexOf` of the
    * `Vector` class
    */
-  def findChar(c: Char, levelVector: Vector[Vector[Char]]): Pos = ???
+  def findChar(c: Char, levelVector: Vector[Vector[Char]]): Pos = {
+    val ys = levelVector.map(_.indexOf(c))
+    val x = ys.indexWhere(_ != -1)
+    Pos(x, ys(x))
+  }
+
+  private def findChar2(c: Char, levelVector: Vector[Vector[Char]]): Pos =
+    toPosMap(levelVector).filter({
+      case (pos,'c') => true
+      case _ => false
+    }).headOption.map(_._1).get
 
   private lazy val vector: Vector[Vector[Char]] =
     Vector(level.split("\n").map(str => Vector(str: _*)): _*)
