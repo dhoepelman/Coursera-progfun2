@@ -52,12 +52,9 @@ trait StringParserTerrain extends GameDef {
    * a valid position (not a '-' character) inside the terrain described
    * by `levelVector`.
    */
-  private def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean = pos => atPos(levelVector)(pos) match {
-    case Some(c) if c != '-' => true
-    case _ => false
-  }
+  private def terrainFunction(levelVector: Vector[Vector[Char]]): Pos => Boolean = pos => atPos(levelVector)(pos).exists(_ != '-')
 
-  def terrainFunction2(levelVector: Vector[Vector[Char]]): Pos => Boolean = pos => {
+  /*def terrainFunction2(levelVector: Vector[Vector[Char]]): Pos => Boolean = pos => {
     toPosMap(levelVector).get(pos) match {
       case Some(c) if c != '-' => true
       case _ => false
@@ -67,7 +64,7 @@ trait StringParserTerrain extends GameDef {
   private def toPosMap(levelVector: Vector[Vector[Char]]) =
     levelVector.zipWithIndex.foldLeft[Map[Pos,Char]](Map.empty)({case (acc, (ys,x)) =>
       acc ++ ys.zipWithIndex.map({case (terrain, y) => Pos(x,y) -> terrain})
-    })
+    })*/
 
   private def atPos(levelVector: Vector[Vector[Char]]) : Pos => Option[Char] = pos => levelVector.lift(pos.x).flatMap(_.lift(pos.y))
 
@@ -85,11 +82,11 @@ trait StringParserTerrain extends GameDef {
     Pos(x, ys(x))
   }
 
-  private def findChar2(c: Char, levelVector: Vector[Vector[Char]]): Pos =
+  /*private def findChar2(c: Char, levelVector: Vector[Vector[Char]]): Pos =
     toPosMap(levelVector).filter({
       case (pos,'c') => true
       case _ => false
-    }).headOption.map(_._1).get
+    }).headOption.map(_._1).get*/
 
   private lazy val vector: Vector[Vector[Char]] =
     Vector(level.split("\n").map(str => Vector(str: _*)): _*)
