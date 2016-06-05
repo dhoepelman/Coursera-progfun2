@@ -66,7 +66,16 @@ trait StringParserTerrain extends GameDef {
       acc ++ ys.zipWithIndex.map({case (terrain, y) => Pos(x,y) -> terrain})
     })*/
 
-  private def atPos(levelVector: Vector[Vector[Char]]) : Pos => Option[Char] = pos => levelVector.lift(pos.x).flatMap(_.lift(pos.y))
+  //private def atPos(levelVector: Vector[Vector[Char]]) : Pos => Option[Char] = pos => levelVector.lift(pos.x).flatMap(_.lift(pos.y))
+  private def atPos(levelVector: Vector[Vector[Char]])(pos : Pos) : Option[Char] = {
+    val Pos(x,y) = pos
+    try {
+      Some(levelVector(x)(y))
+    }
+    catch {
+      case e: IndexOutOfBoundsException => None
+    }
+  }
 
   /**
    * This function should return the position of character `c` in the

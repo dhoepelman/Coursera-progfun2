@@ -67,12 +67,12 @@ trait Solver extends GameDef {
            explored: Set[Block]): Stream[(Block, List[Move])] = initial match {
     case Stream.Empty => initial
     case xs => {
-      val more = for {
+      val moreUnfiltered = for {
         path <- initial
         neighbors <- (neighborsWithHistory _).tupled(path)
       } yield neighbors
-      val newNeighs = newNeighborsOnly(more, explored)
-      initial #::: from(more, explored ++ (more.map(_._1)))
+      val moreFiltered = newNeighborsOnly(moreUnfiltered, explored)
+      initial #::: from(moreFiltered, explored ++ (moreFiltered.map(_._1)))
     }
   }
 
