@@ -10,13 +10,6 @@ import scala.annotation.tailrec
 
 abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
-  lazy val genHeap: Gen[H] = for {
-    n <- arbitrary[Int]
-    h <- oneOf(const(empty), genHeap)
-  } yield insert(n, h)
-
-  implicit lazy val arbHeap: Arbitrary[H] = Arbitrary(genHeap)
-  
   @tailrec
   private def dumpHeap(h:H, acc:List[Int] = Nil) : List[Int] = if(isEmpty(h)) acc else dumpHeap(deleteMin(h), findMin(h) :: acc)
 
